@@ -1,0 +1,251 @@
+:root{
+  /* Color tokens (WCAG AA conscious choices for normal text contrast) */
+  --color-primary: #0b5cff;        /* blue */
+  --color-accent:  #0ea5a4;        /* teal */
+  --color-surface: #ffffff;        /* card surface */
+  --color-page-bg: #f5f7fb;        /* page background */
+  --color-text:    #0f1724;        /* primary body text (dark) */
+  --color-neutral: #6b7280;        /* muted meta text */
+  --color-success: #16a34a;        /* green */
+  --color-warning: #d97706;        /* amber */
+  --color-danger:  #dc2626;        /* red */
+  --radius: 12px;
+  --card-padding: 16px;
+  --shadow-elev: 0 6px 18px rgba(15,23,36,0.08);
+  --shadow-elev-strong: 0 10px 30px rgba(15,23,36,0.12);
+  --focus-ring: 3px;
+  --max-content-width: 1200px;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+               Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
+
+/* Page baseline (mobile-first) */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: var(--font-sans);
+  font-size:16px;
+  line-height:1.4;
+  color:var(--color-text);
+  background-color:var(--color-page-bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Dashboard container */
+.dashboard{
+  max-width:var(--max-content-width);
+  margin:24px auto;
+  padding:16px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:14px;
+  align-items:start;
+}
+
+/* Responsive grid: adapt to available width */
+@media (min-width:520px){
+  .dashboard{
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* Project card base */
+.project-card{
+  background:var(--color-surface);
+  padding:var(--card-padding);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-elev);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  outline: none; /* focus handled separately */
+  min-height:120px;
+  border: 1px solid rgba(15,23,36,0.04);
+  /* Provide a semantic hook for JS: data-project-id attribute expected on element */
+}
+
+/* Hover/active affordances for pointer users */
+.project-card:hover{
+  transform: translateY(-4px);
+  box-shadow:var(--shadow-elev-strong);
+}
+
+/* Keyboard focus (visible & accessible) */
+.project-card:focus,
+.project-card:focus-visible{
+  box-shadow: var(--shadow-elev-strong);
+  outline: none;
+  position:relative;
+}
+.project-card:focus::after,
+.project-card:focus-visible::after{
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: calc(var(--radius) + 6px);
+  background: transparent;
+  box-shadow: 0 0 0 var(--focus-ring) rgba(14,165,164,0.14);
+  pointer-events:none;
+}
+
+/* Header row: title + badges */
+.project-card__header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* Title and owner */
+.project-card__title{
+  font-size:1.05rem; /* slightly larger than body */
+  font-weight:600;
+  color:var(--color-text);
+  margin:0;
+  line-height:1.2;
+}
+
+/* Owner and meta (muted) */
+.project-card__meta{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  align-items:flex-start;
+  color:var(--color-neutral);
+  font-size:0.875rem;
+}
+
+/* Compact owner line */
+.project-card__owner{
+  font-size:0.9rem;
+  color:var(--color-neutral);
+}
+
+/* Status badge - pill */
+.project-card__status-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:0.78rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.02em;
+  color:var(--color-surface);
+  min-height:28px;
+  line-height:1;
+  flex-shrink:0;
+  box-shadow: none;
+}
+
+/* Status color variants (use these classes on status element) */
+.badge--on-track{ background: linear-gradient(180deg,var(--color-primary), #0849d8); }
+.badge--at-risk { background: linear-gradient(180deg,#f59e0b, #d97706); color:#fff; }
+.badge--blocked { background: linear-gradient(180deg,var(--color-danger), #9b1f1f); color:#fff; }
+.badge--complete{ background: linear-gradient(180deg,#10b981, #059669); color:#fff; }
+
+/* Priority indicator: dot + label */
+.project-card__priority{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+  font-size:0.85rem;
+  color:var(--color-neutral);
+  padding:6px 0;
+}
+
+/* Small color-coded dot */
+.project-card__priority .dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+  flex-shrink:0;
+  box-shadow:0 1px 0 rgba(0,0,0,0.06) inset;
+}
+
+/* Priority variants (apply class to priority wrapper) */
+.priority--low .dot{ background:#93c5fd; }     /* light blue */
+.priority--medium .dot{ background:#fbbf24; }  /* amber */
+.priority--high .dot{ background:var(--color-danger); } /* red */
+
+.priority--low { color: #0f1724; }
+.priority--medium { color: #0f1724; }
+.priority--high { color:var(--color-text); }
+
+/* Recent activity area */
+.project-card__recent-activity{
+  margin-top:4px;
+  font-size:0.9rem;
+  color:var(--color-neutral);
+  background: linear-gradient(180deg, rgba(11,92,255,0.02), transparent);
+  padding:8px;
+  border-radius:8px;
+}
+
+/* Card footer: actions or timestamp */
+.project-card__footer{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:0.85rem;
+  color:var(--color-neutral);
+}
+
+/* Small visually hidden helper (for a11y descriptions) */
+.visually-hidden{
+  position:absolute !important;
+  height:1px; width:1px;
+  overflow:hidden;
+  clip:rect(1px, 1px, 1px, 1px);
+  white-space:nowrap;
+}
+
+/* Utility helpers for emphasis */
+.muted{ color:var(--color-neutral); font-size:0.9rem; }
+.small{ font-size:0.825rem; }
+
+/* Make interactive elements inside card clear & accessible */
+.project-card a,
+.project-card button{
+  font:inherit;
+  color:var(--color-primary);
+  background:transparent;
+  border: none;
+  cursor:pointer;
+  padding:6px 8px;
+  border-radius:8px;
+}
+.project-card a:focus,
+.project-card button:focus{
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring) rgba(11,92,255,0.12);
+}
+
+/* Ensure readable spacing when scaling up */
+@media (min-width:960px){
+  .dashboard{ gap:20px; padding:20px; }
+  .project-card{ padding:20px; }
+}
+
+/* Accessibility: ensure text-size adjusts and remains legible */
+@media (prefers-reduced-motion: reduce){
+  .project-card, .project-card:hover{ transform:none; transition:none; }
+}
+
+/* Make sure normal body copy ratio meets AA: color-text on page-bg */
+@media (max-width:380px){
+  .project-card__title{ font-size:1rem; }
+  .project-card__recent-activity{ font-size:0.85rem; }
+}
+
+/* Deterministic hooks for integration tests / automation */
+.dashboard{ --component: dashboard; }
+.project-card{ --component: project-card; }

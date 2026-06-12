@@ -1,0 +1,46 @@
+{
+  "projects": [
+    {
+      "name": "Website Redesign",
+      "owner": "Aisha Khan",
+      "status": "On Track",
+      "recentActivity": "Completed initial QA pass for homepage.",
+      "priority": "Medium"
+    },
+    {
+      "name": "API Migration",
+      "owner": "Jonas Meyer",
+      "status": "At Risk",
+      "recentActivity": "Third-party dependency upgrade caused integration failures.",
+      "priority": "High"
+    },
+    {
+      "name": "Mobile Launch",
+      "owner": "Priya Patel",
+      "status": "Blocked",
+      "recentActivity": "App store review flagged a security policy issue.",
+      "priority": "High"
+    },
+    {
+      "name": "Customer Onboarding Flow",
+      "owner": "Diego Alvarez",
+      "status": "On Track",
+      "recentActivity": "A/B variant showing a 12% lift in completion.",
+      "priority": "Low"
+    },
+    {
+      "name": "Billing Engine Rewrite",
+      "owner": "Chen Li",
+      "status": "Complete",
+      "recentActivity": "All legacy cron jobs retired; monitoring stable.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Accessibility Audit",
+      "owner": "Samantha Brooks",
+      "status": "At Risk",
+      "recentActivity": "Audit identified several color-contrast failures to resolve.",
+      "priority": "Low"
+    }
+  ]
+}

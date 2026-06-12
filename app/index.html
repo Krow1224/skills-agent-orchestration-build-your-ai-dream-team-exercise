@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1 class="visually-hidden">Project Pulse Dashboard</h1>
+  </header>
+  <main>
+    <section class="dashboard" role="list" aria-label="Project dashboard">
+      <!-- Project cards will be rendered here -->
+    </section>
+  </main>
+
+  <noscript>
+    <div style="max-width:800px;margin:24px auto;padding:16px;background:#fff;border-radius:8px;text-align:center;">
+      JavaScript is required to view the Project Pulse dashboard. Please enable JavaScript and reload the page.
+    </div>
+  </noscript>
+
+  <script id="embedded-data" type="application/json">{
+  "projects": [
+    {
+      "name": "Website Redesign",
+      "owner": "Aisha Khan",
+      "status": "On Track",
+      "recentActivity": "Completed initial QA pass for homepage.",
+      "priority": "Medium"
+    },
+    {
+      "name": "API Migration",
+      "owner": "Jonas Meyer",
+      "status": "At Risk",
+      "recentActivity": "Third-party dependency upgrade caused integration failures.",
+      "priority": "High"
+    },
+    {
+      "name": "Mobile Launch",
+      "owner": "Priya Patel",
+      "status": "Blocked",
+      "recentActivity": "App store review flagged a security policy issue.",
+      "priority": "High"
+    },
+    {
+      "name": "Customer Onboarding Flow",
+      "owner": "Diego Alvarez",
+      "status": "On Track",
+      "recentActivity": "A/B variant showing a 12% lift in completion.",
+      "priority": "Low"
+    },
+    {
+      "name": "Billing Engine Rewrite",
+      "owner": "Chen Li",
+      "status": "Complete",
+      "recentActivity": "All legacy cron jobs retired; monitoring stable.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Accessibility Audit",
+      "owner": "Samantha Brooks",
+      "status": "At Risk",
+      "recentActivity": "Audit identified several color-contrast failures to resolve.",
+      "priority": "Low"
+    }
+  ]
+}</script>
+
+  <script>
+  (function(){
+    const dashboard = document.querySelector('.dashboard');
+    if(!dashboard) return;
+
+    function mapStatusToClass(status){
+      switch((status||'').toLowerCase()){
+        case 'on track': return 'badge--on-track';
+        case 'at risk': return 'badge--at-risk';
+        case 'blocked': return 'badge--blocked';
+        case 'complete': return 'badge--complete';
+        default: return 'badge--on-track';
+      }
+    }
+
+    function mapPriorityToClass(priority){
+      switch((priority||'').toLowerCase()){
+        case 'low': return 'priority--low';
+        case 'medium': return 'priority--medium';
+        case 'high': return 'priority--high';
+        default: return 'priority--medium';
+      }
+    }
+
+    function createCard(project, idx){
+      const article = document.createElement('article');
+      article.className = 'project-card';
+      article.setAttribute('role','listitem');
+      article.setAttribute('tabindex','0');
+      article.setAttribute('data-project-id', 'project-' + idx);
+
+      const titleId = 'project-title-' + idx;
+      const metaId = 'project-meta-' + idx;
+      article.setAttribute('aria-labelledby', titleId);
+      article.setAttribute('aria-describedby', metaId);
+
+      // Header
+      const header = document.createElement('div');
+      header.className = 'project-card__header';
+
+      const titleWrap = document.createElement('div');
+      titleWrap.style.minWidth = '0';
+
+      const title = document.createElement('h3');
+      title.id = titleId;
+      title.className = 'project-card__title';
+      title.textContent = project.name || 'Untitled Project';
+      titleWrap.appendChild(title);
+
+      const meta = document.createElement('div');
+      meta.id = metaId;
+      meta.className = 'project-card__meta';
+
+      const owner = document.createElement('div');
+      owner.className = 'project-card__owner';
+      owner.textContent = project.owner || '';
+      meta.appendChild(owner);
+
+      // Priority
+      const priorityWrap = document.createElement('div');
+      const priorityClass = mapPriorityToClass(project.priority);
+      priorityWrap.className = 'project-card__priority ' + priorityClass;
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      priorityWrap.appendChild(dot);
+      const prLabel = document.createElement('span');
+      prLabel.textContent = project.priority || '';
+      priorityWrap.appendChild(prLabel);
+      meta.appendChild(priorityWrap);
+
+      titleWrap.appendChild(meta);
+      header.appendChild(titleWrap);
+
+      // Status badge
+      const status = document.createElement('div');
+      const statusCls = mapStatusToClass(project.status);
+      status.className = 'project-card__status-badge ' + statusCls;
+      status.textContent = project.status || '';
+      header.appendChild(status);
+
+      article.appendChild(header);
+
+      // Recent activity
+      const recent = document.createElement('div');
+      recent.className = 'project-card__recent-activity';
+      recent.textContent = project.recentActivity || '';
+      article.appendChild(recent);
+
+      // Footer (owner + priority repeated for clarity)
+      const footer = document.createElement('div');
+      footer.className = 'project-card__footer';
+      const ownerSmall = document.createElement('div');
+      ownerSmall.className = 'small muted';
+      ownerSmall.textContent = 'Owner: ' + (project.owner || '—');
+      footer.appendChild(ownerSmall);
+      const prSmall = document.createElement('div');
+      prSmall.className = 'small';
+      prSmall.textContent = 'Priority: ' + (project.priority || '—');
+      footer.appendChild(prSmall);
+
+      article.appendChild(footer);
+
+      return article;
+    }
+
+    function render(data){
+      dashboard.innerHTML = '';
+      const projects = (data && data.projects) || [];
+      projects.forEach((p, i) => {
+        try{
+          const card = createCard(p, i);
+          dashboard.appendChild(card);
+        }catch(e){
+          // skip malformed entries
+          console.error('Failed to render project', e);
+        }
+      });
+    }
+
+    // Try fetching external JSON, fall back to embedded data on failure
+    fetch('project-data.json').then(function(res){
+      if(!res.ok) throw new Error('Network response was not ok');
+      return res.json();
+    }).then(function(data){
+      render(data);
+    }).catch(function(){
+      try{
+        const embedded = document.getElementById('embedded-data');
+        const parsed = JSON.parse(embedded.textContent);
+        render(parsed);
+      }catch(e){
+        dashboard.innerHTML = '<p class="muted">Unable to load project data.</p>';
+        console.error('Failed to load project data', e);
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

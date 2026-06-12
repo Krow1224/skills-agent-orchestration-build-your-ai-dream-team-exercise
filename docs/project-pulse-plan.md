@@ -154,10 +154,66 @@ Total estimated time: ~28.5 hours (sum of above).
 
 ## Designer responsibilities (detailed)
 
-Primary goals: visual clarity, accessibility, and sample data realism.
+Primary goals: visual clarity, accessibility, and realistic sample data.
 
-- Provide the `app/project-data.json` sample dataset (owner).
-  - Include realistic fields (id, name, owner, status, progress, due_date, tags, description, tasks_completed, tasks_total).
-  - Create 6–10 varied examples (overdue, completed, near-complete, long names, multi-tag).
-- Provide low-fidelity and final mockups (desktop, tablet, mobile) with:
-- ... (truncated in prompt)
+- Provide app/project-data.json (owner).
+  - Define schema: id, name, owner, status, progress (0–100), due_date (ISO), tags[], description, tasks_completed, tasks_total.
+  - Provide 6–10 varied examples: overdue, completed, near-complete, long names, multi-tag.
+- Provide mockups and style guidance.
+  - Low-fi and final mockups for desktop, tablet, and mobile.
+  - Color palette, typography, spacing, focus/hover states, and accessible contrast choices.
+  - Export required assets (icons, logos) optimized for web.
+- Provide CSS base for visual system (owner of app/styles.css).
+  - Core variables, layout rules, card and control styles; mark extension points for coder (class names, data-attrs).
+- Accessibility & content guidance.
+  - Specify ARIA roles, expected headings order, focus behavior, and labels for controls.
+  - Provide sample long-form text and localized examples for truncation tests.
+- Review & sign-off.
+  - Review code PRs for visual and data fidelity; approve when mockups match implementation.
+
+## Coder responsibilities (detailed)
+
+Primary goals: robust, accessible, and easy-to-run static implementation.
+
+- Implement app/index.html (owner).
+  - Create semantic markup, include <script id="embedded-data" type="application/json"> fallback, and control elements with agreed IDs/classes.
+- Implement app/scripts.js (owner).
+  - Load project-data.json with fetch; on failure, parse embedded JSON fallback.
+  - Render project cards, filters, search, sorting, and "show overdue".
+  - Keep DOM updates accessible (focus management, live regions if needed).
+- Implement run & launch files (.vscode/launch.json).
+  - Ensure Codespaces can open index.html; document file:// fallback steps in docs/run-in-codespaces.md.
+- Implement small visuals (progress bars, summary) without external libs.
+- Write minimal tests/manual checks in docs/test-plan.md to validate data-loading and UI behaviors.
+- Address Designer review comments and iterate until sign-off.
+
+## Dependencies & Ordering
+
+- Data model (Designer) → HTML skeleton (Coder) → Data-loading fallback (Coder) → Rendering & controls (Coder) → Visual polish & responsive tweaks (Designer + Coder) → Accessibility pass → Docs & launch config → Final QA/sign-off.
+- Key constraints:
+  - Rendering requires a stable data schema; do not implement final render until schema is provided.
+  - CSS class names and data-attributes must be agreed before heavy DOM wiring to avoid rework.
+- Parallelizable items:
+  - Designer mockups & sample data can be produced while coder scaffolds HTML and script stubs.
+  - CSS base and JS stubs can be developed in parallel if interface contract (IDs/classes) is shared.
+
+## Validation & Acceptance Criteria
+
+- App runs in Codespaces by opening app/index.html (with documented fallback); instructions verified in docs/run-in-codespaces.md.
+- Data-loading:
+  - Fetching app/project-data.json succeeds in normal environments.
+  - When fetch fails, embedded JSON fallback loads and renders identical UI.
+- UI correctness:
+  - Project list renders all sample projects with title, owner, status badge, progress, and due date.
+  - Search, filters, sorting, and "show overdue" work and update the DOM correctly.
+- Accessibility:
+  - Keyboard navigation works for controls and project cards.
+  - Focus states visible; ARIA labels present for interactive controls.
+  - Color contrast meets WCAG AA for normal text.
+- Responsiveness:
+  - Layout adapts at desktop/tablet/mobile breakpoints; no horizontal scroll on mobile viewport.
+- Documentation & tests:
+  - docs/run-in-codespaces.md and docs/test-plan.md include steps to reproduce failures and acceptance checks.
+- Review:
+  - Designer approves visual match to mockups; Coder confirms behavior.
+  - Stakeholder signs off in final acceptance step.
